@@ -67,10 +67,10 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 		$_POST['key-10'],
 	];
 
-	$listOfRelativeAddressObjects = [];
 	$listOfRelativeAddress = [];
 
 	$index = 0;
+	// Midsquare modulo algorithm
 	foreach ($listOfKeys as $key) {
 		$key = (int) $key;
 		$squaredKey = (int) pow($key, 2);
@@ -78,14 +78,6 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 		$keyRelativeAddress = (int) substr($squaredKey, $addressDetail->index, $addressDetail->length);
 		$modRelativeAddress = (int) fmod($keyRelativeAddress, $L);
 
-		$object = new stdClass();
-		$object->id = $index;
-		$object->key = $key;
-		$object->squaredKey = $squaredKey;
-		$object->relativeAddress = $keyRelativeAddress;
-		$object->finalAddress = $modRelativeAddress;
-
-		array_push($listOfRelativeAddressObjects, $object);
 		array_push($listOfRelativeAddress, $modRelativeAddress);
 
 		$counts = array_count_values($listOfRelativeAddress);
@@ -93,7 +85,7 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 			return $counts[$value] > 1;
 		});
 
-		// Double Hash Functionality
+		// Double hashing algorithm if collisions happened
 		if (count($collisions) > 0) {
 			$newRelativeAddress = doubleHashing($key, $listOfRelativeAddress, $collisions);
 			end($collisions);
@@ -101,37 +93,8 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 			$listOfRelativeAddress[$collisionIndex] = $newRelativeAddress;
 		}
 
-		// echo "==================================== <br>";
-		// echo "INITIAL KEY: $key <br>";
-		// echo "SQUARED KEY: $squaredKey <br>";
-		// echo "RELATIVE ADDRESS: $keyRelativeAddress <br>";		
-		// echo "MOD: $modRelativeAddress <br>";
-		// echo "==================================== <br>";
 		$index++;
 	}
-
-	// echo "<br>";
-	// echo "<br>";
-
-	// var_dump(array_diff_key( $listOfRelativeAddress , array_unique( $listOfRelativeAddress ) ));
-	// echo "<br>";
-	// echo "<br>";
-
-	// if (count($collisions) > 0) {
-	// 	echo "THERE ARE SOME COLLISIONS";
-	// } else {
-	// 	echo "NOPE";
-	// }
-
-	/**
-	 * If collisions then:
-	 * - Another algorithm
-	 * - Then output final result
-	 * 
-	 * 
-	 * Else
-	 * Output the relative address
-	 */
 }
 
 ?>
@@ -139,7 +102,7 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Project</title>
+	<title>Tugas Terstruktur Sistem Berkas</title>
 
 	<!-- CSS -->
 	<link rel="stylesheet" href="Assets/bootstrap.min.css">
@@ -154,62 +117,64 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 			width: 80%;
 			margin: auto;
 		}
-		
 	</style>
-
 </head>
 <body>
 
 <form class="text-center border border-light p-5" method="POST">
 
-    <p class="h4 mb-4">Project</p>
+    <p class="h4 mb-4">Tugas Terstruktur Sistem Berkas</p>
 
-    <p>Tugas Terstruktur Sistem Berkas</p>
+    <p>Implementasi Algoritma <b>Midsquare Modulo</b> dan <b>Double Hashing</b></p>
+
+	<p>
+        <a href="#" data-toggle="modal" data-target="#rules-modal">Lihat Aturan Penggunaan Aplikasi</a>
+    </p>
 
     <br>
   
     <div class="row">
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Pertama" name="key-1">
+    		<input type="text" class="form-control mb-4" placeholder="Key Pertama" name="key-1" required>
     	</div>
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Kedua" name="key-2">
+    		<input type="text" class="form-control mb-4" placeholder="Key Kedua" name="key-2" required>
     	</div>
     </div>
 
     <div class="row">
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Ketiga" name="key-3">
+    		<input type="text" class="form-control mb-4" placeholder="Key Ketiga" name="key-3" required>
     	</div>
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Keempat" name="key-4">
+    		<input type="text" class="form-control mb-4" placeholder="Key Keempat" name="key-4" required>
     	</div>
     </div>
 
  	<div class="row">
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Kelima" name="key-5">
+    		<input type="text" class="form-control mb-4" placeholder="Key Kelima" name="key-5" required>
     	</div>
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Keenam" name="key-6">
-    	</div>
-    </div>
-
-	<div class="row">
-    	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Ketujuh" name="key-7">
-    	</div>
-    	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Kedelapan" name="key-8">
+    		<input type="text" class="form-control mb-4" placeholder="Key Keenam" name="key-6" required>
     	</div>
     </div>
 
 	<div class="row">
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Kesembilan" name="key-9">
+    		<input type="text" class="form-control mb-4" placeholder="Key Ketujuh" name="key-7" required>
     	</div>
     	<div class="col">
-    		<input type="text" class="form-control mb-4" placeholder="Key Kesepuluh" name="key-10">
+    		<input type="text" class="form-control mb-4" placeholder="Key Kedelapan" name="key-8" required>
+    	</div>
+    </div>
+
+	<div class="row">
+    	<div class="col">
+    		<input type="text" class="form-control mb-4" placeholder="Key Kesembilan" name="key-9" required>
+    	</div>
+    	<div class="col">
+    		<input type="text" class="form-control mb-4" placeholder="Key Kesepuluh" name="key-10" required>
     	</div>
     </div>
    
@@ -230,9 +195,27 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 			echo $template;
 		}
 	?>
-    
-
 </form>
+
+<div id="rules-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+		<h5 class="modal-title">Aturan</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		<div class="modal-body">
+			<ol>
+				<li>Masukkan sepuluh key</li>
+				<li>Setelah semua key diinput, tekan tombol <b>Hitung</b> untuk memulai kalkulasi</li>
+				<li>Hasil dari perhitungan akan ditampilkan pada bagian hasil</li>
+			</ol>
+		</div>
+	</div>
+	</div>
+</div>
 
 <!-- JavaScript -->
 <script src="Assets/jquery-3.3.1.slim.min.js"></script>
