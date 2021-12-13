@@ -2,6 +2,8 @@
 
 $L = 13;
 $N = 3;
+$prime = 7;
+$indexDoubleHash = 1;
 
 function getAddressDetail($key) {
 	$keyLength = strlen($key);
@@ -22,6 +24,32 @@ function getAddressDetail($key) {
 	}
 
 	return $detail;
+}
+
+function doubleHashing($key, $listOfRelativeAddress, $collisions) {
+	global $L;
+	global $prime;
+	global $indexDoubleHash;
+
+	$hash1 = $key % $L;
+	$hash2 = ($prime - ($key % $prime));
+	$doubleHash = ($hash1 + $indexDoubleHash * $hash2) % $L;
+
+	end($collisions);
+	$collisionIndex = key($collisions);
+	$listOfRelativeAddress[$collisionIndex] = $doubleHash;
+
+	$counts = array_count_values($listOfRelativeAddress);
+	$collisions = array_filter($listOfRelativeAddress, function ($value) use ($counts) {
+		return $counts[$value] > 1;
+	});
+	
+	if (count($collisions) > 0) {
+		$indexDoubleHash += 1;
+		return doubleHashing($key, $listOfRelativeAddress, $collisions);
+	} else {
+		return $doubleHash;
+	}
 }
 
 
@@ -60,16 +88,28 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 		array_push($listOfRelativeAddressObjects, $object);
 		array_push($listOfRelativeAddress, $modRelativeAddress);
 
-		echo "==================================== <br>";
-		echo "INITIAL KEY: $key <br>";
-		echo "SQUARED KEY: $squaredKey <br>";
-		echo "RELATIVE ADDRESS: $keyRelativeAddress <br>";		
-		echo "MOD: $modRelativeAddress <br>";
-		echo "==================================== <br>";
+		$counts = array_count_values($listOfRelativeAddress);
+		$collisions = array_filter($listOfRelativeAddress, function ($value) use ($counts) {
+			return $counts[$value] > 1;
+		});
+
+		// Double Hash Functionality
+		if (count($collisions) > 0) {
+			$newRelativeAddress = doubleHashing($key, $listOfRelativeAddress, $collisions);
+			end($collisions);
+			$collisionIndex = key($collisions);
+			$listOfRelativeAddress[$collisionIndex] = $newRelativeAddress;
+		}
+
+		// echo "==================================== <br>";
+		// echo "INITIAL KEY: $key <br>";
+		// echo "SQUARED KEY: $squaredKey <br>";
+		// echo "RELATIVE ADDRESS: $keyRelativeAddress <br>";		
+		// echo "MOD: $modRelativeAddress <br>";
+		// echo "==================================== <br>";
 		$index++;
 	}
 
-	// var_dump($listOfRelativeAddressObjects);
 	// echo "<br>";
 	// echo "<br>";
 
@@ -77,18 +117,11 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 	// echo "<br>";
 	// echo "<br>";
 
-	$counts = array_count_values($listOfRelativeAddress);
-	$collisions = array_filter($listOfRelativeAddress, function ($value) use ($counts) {
-		return $counts[$value] > 1;
-	});
-
-	var_dump($collisions);
-
-	if (count($collisions) > 0) {
-		echo "THERE ARE SOME COLLISIONS";
-	} else {
-		echo "NOPE";
-	}
+	// if (count($collisions) > 0) {
+	// 	echo "THERE ARE SOME COLLISIONS";
+	// } else {
+	// 	echo "NOPE";
+	// }
 
 	/**
 	 * If collisions then:
@@ -115,7 +148,7 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
 		form {
 			text-align: center;
 			margin: 0 auto;
-			width: 500px;
+			width: 600px;
 		}
 		body{
 			width: 80%;
@@ -184,9 +217,19 @@ if (isset($_POST['key-1']) && isset($_POST['key-2']) && isset($_POST['key-3']) &
     
     <br>
     <p>Hasil</p>
-    <div class="row" style="text-align: center">
-    	<!-- <input type="text" name=""  class="form-control" value="<?php echo $z; ?>" disabled> -->
-    </div>
+	<?php
+		if(isset($listOfRelativeAddress)) {
+			$template = "";
+			foreach($listOfRelativeAddress as $indexHasil => $addr) {
+				$template = $template . "<div class=\"row\">
+					<div class=\"col-12 text-left\">
+						<h5 align='center'>Key ".($indexHasil+1)." yaitu $listOfKeys[$indexHasil] akan disimpan pada alamat/index $addr</h5>
+					</div>
+				</div><br>";
+			}
+			echo $template;
+		}
+	?>
     
 
 </form>
